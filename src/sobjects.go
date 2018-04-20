@@ -27,12 +27,21 @@ package salesforce
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 )
 
-// SObject gets an SObject
-func (s *Session) SObject(name string) (*QueryResponse, error) {
+// SObjectUpsertResponse is returned when a POST or PATCH is sent to Salesforce
+type SObjectUpsertResponse struct {
+	ID      string        `json:"id"`
+	Success bool          `json:"success"`
+	Errors  []interface{} `json:"errors"`
+}
+
+// GetSObject gets an SObject
+func (s *Session) GetSObject(name string) (*QueryResponse, error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/services/data/v%s/sobjects/%s/", s.OAuth.InstanceURL, s.APIVersion, name), nil)
 	if err != nil {
 		return nil, err
@@ -52,8 +61,62 @@ func (s *Session) SObject(name string) (*QueryResponse, error) {
 		return nil, err
 	}
 
-	var response *QueryResponse
+	response := &QueryResponse{}
 	err = json.Unmarshal(respBody, response)
 
 	return response, err
+}
+
+// CreateSObject creates the objname SObject defined by the payload
+func (s *Session) CreateSObject(objname string, payload io.Reader) (*SObjectUpsertResponse, error) {
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/services/data/v42.0/sobjects/%s", s.OAuth.InstanceURL, objname), payload)
+	if err != nil {
+		return nil, err
+	}
+
+	s.AddSessionHeaders(req)
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	log.Println(string(respBody))
+
+	response := &SObjectUpsertResponse{}
+	err = json.Unmarshal(respBody, response)
+
+	return response, err
+}
+
+// UpdateSObject PATCHes an SObject in salesforce
+func (s *Session) UpdateSObject(objname string, payload io.Reader) (*SObjectUpsertResponse, error) {
+	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/services/data/v42.0/sobjects/%s", s.OAuth.InstanceURL, objname), payload)
+	if err != nil {
+		return nil, err
+	}
+
+	s.AddSessionHeaders(req)
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	result := &SObjectUpsertResponse{}
+	err = json.Unmarshal(respBody, result)
+
+	return result, nil
 }

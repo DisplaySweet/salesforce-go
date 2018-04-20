@@ -57,12 +57,11 @@ func (s *Session) SOQLQuery(query string) (*QueryResponse, error) {
 		return nil, err
 	}
 
-	var temp *QueryResponse
-	err = json.Unmarshal(respBody, temp)
+	result := &QueryResponse{}
+	err = json.Unmarshal(respBody, result)
 	if err != nil {
 		log.Println(string(respBody))
-		return nil, err
 	}
 
-	return temp, nil
+	return result, err
 }
