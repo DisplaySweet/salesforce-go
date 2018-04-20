@@ -24,9 +24,26 @@ SOFTWARE.
 
 package salesforce
 
+// OAuthDetails stores the response from an OAuth login
+type OAuthDetails struct {
+	ID          string
+	AccessToken string `json:"access_token"`
+	InstanceURL string `json:"instance_url"`
+	TokenType   string `json:"token_type"`
+	IssuedAt    string `json:"issued_at"`
+	Signature   string
+}
+
 // QueryResponse holds a response from Salesfroce
 type QueryResponse struct {
 	TotalSize int                      `json:"totalSize"`
 	Done      bool                     `json:"done"`
 	Records   []map[string]interface{} `json:"records"`
+}
+
+// SObjectUpsertResponse is returned when a POST or PATCH is sent to Salesforce
+type SObjectUpsertResponse struct {
+	ID      string        `json:"id"`
+	Success bool          `json:"success"`
+	Errors  []interface{} `json:"errors"`
 }

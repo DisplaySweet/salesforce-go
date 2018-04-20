@@ -33,13 +33,6 @@ import (
 	"net/http"
 )
 
-// SObjectUpsertResponse is returned when a POST or PATCH is sent to Salesforce
-type SObjectUpsertResponse struct {
-	ID      string        `json:"id"`
-	Success bool          `json:"success"`
-	Errors  []interface{} `json:"errors"`
-}
-
 // GetSObject gets an SObject
 func (s *Session) GetSObject(name string) (*QueryResponse, error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/services/data/v%s/sobjects/%s/", s.OAuth.InstanceURL, s.APIVersion, name), nil)

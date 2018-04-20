@@ -37,16 +37,6 @@ const (
 	loginURI = "https://login.salesforce.com/services/oauth2/token"
 )
 
-// OAuthDetails stores the response from an OAuth login
-type OAuthDetails struct {
-	ID          string
-	AccessToken string `json:"access_token"`
-	InstanceURL string `json:"instance_url"`
-	TokenType   string `json:"token_type"`
-	IssuedAt    string `json:"issued_at"`
-	Signature   string
-}
-
 // LoginByOAuth attempts to log in by oauth
 func LoginByOAuth(creds Credentials) (*Session, error) {
 	payload := url.Values{
