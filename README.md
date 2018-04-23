@@ -22,7 +22,7 @@ func main() {
 		ClientID:     "3MVG9lKcPoNINVBJSoQsNCD.HHDdbugPsNXwwyFbgb47KWa_PTv",
 		ClientSecret: "5678471853609579508",
 		RedirectURI:  "https://localhost:8443/RestTest/oauth/_callback",
-		APIVersion:   "42.0",
+		APIVersion:   "2",
 	}
 
     //Authorise with salesforce
