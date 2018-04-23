@@ -1,18 +1,40 @@
-# Salesforce-Go
+/*
+MIT License
 
-A library to help consume Salesforce objects, useful when creating external integrations to push to or pull data from Salesforce.
+Copyright (c) 2018 Display Sweet
 
-To download the package:
-```
-> go get github.com/DisplaySweet/salesforce-go/src
-```
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-Usage:
-```
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+package main
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"log"
+
+	"github.com/DisplaySweet/salesforce-go/src"
+)
+
 func main() {
 
-    //Enter your salesforce credentials
 	creds := salesforce.Credentials{
 		Username:     "test",
 		Password:     "secret_password",
@@ -25,43 +47,35 @@ func main() {
 		APIVersion:   "42.0",
 	}
 
-    //Authorise with salesforce
 	session, err := salesforce.LoginByOAuth(creds)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-    //Initialise an object for creation
 	contact := Contact{
-		FirstName: "Create",
-		LastName:  "A",
-		Phone:     "New",
-		Email:     "Contact",
+		FirstName: "What",
+		LastName:  "Am",
+		Phone:     "I",
+		Email:     "Doing?",
 	}
 
-    //The CreateSObject method's payload is an io.Reader type
-    //so marshal the object into bytes
 	b, err := json.Marshal(contact)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-    //And then create a new io.Reader
 	payload := bytes.NewReader(b)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-    //Push the Contact object and it's payload to salesforce
 	result, err := session.CreateSObject("Contact", payload)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-    //We're going to update this record, so fetch it's ID from the response
 	contactID := result.ID
 
-    //Recreate the object data to update with
 	updateContact := Contact{
 		FirstName: "Update",
 		LastName:  "The",
@@ -79,13 +93,10 @@ func main() {
 		log.Fatalln(err)
 	}
 
-    //We need to push the data to the individual object so we use it's ID
 	contactEndpoint := fmt.Sprintf("Contact/%s", contactID)
 
-    //Push the payload to update the object
 	anotherResult, err := session.UpdateSObject(contactEndpoint, payload)
 
-    //Let's get the object we just updated, and view it's contents
 	response, err := session.GetSObject(contactEndpoint)
 	if err != nil {
 		log.Fatalln(err)
@@ -96,4 +107,3 @@ func main() {
 		contactID := contactData["Id"].(string)
 	}
 }
-```
