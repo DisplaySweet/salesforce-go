@@ -36,9 +36,10 @@ type OAuthDetails struct {
 
 // QueryResponse holds a response from Salesfroce
 type QueryResponse struct {
-	TotalSize int                      `json:"totalSize"`
-	Done      bool                     `json:"done"`
-	Records   []map[string]interface{} `json:"records"`
+	TotalSize      int                      `json:"totalSize"`
+	Done           bool                     `json:"done"`
+	Records        []map[string]interface{} `json:"records"`
+	NextRecordsURL string                   `json:"nextRecordsUrl"`
 }
 
 // SObjectUpsertResponse is returned when a POST or PATCH is sent to Salesforce
