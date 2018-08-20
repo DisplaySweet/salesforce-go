@@ -89,8 +89,8 @@ func (s *Session) CreateSObject(objname string, payload io.Reader) (*SObjectUpse
 }
 
 // UpdateSObject PATCHes an SObject in salesforce
-func (s *Session) UpdateSObject(objname string, payload io.Reader) (*SObjectUpsertResponse, error) {
-	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/services/data/v42.0/sobjects/%s", s.OAuth.InstanceURL, objname), payload)
+func (s *Session) UpdateSObject(objname string, objID string, payload io.Reader) (*SObjectUpsertResponse, error) {
+	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/services/data/v42.0/sobjects/%s/%s", s.OAuth.InstanceURL, objname, objID), payload)
 	if err != nil {
 		return nil, err
 	}
@@ -108,8 +108,8 @@ func (s *Session) UpdateSObject(objname string, payload io.Reader) (*SObjectUpse
 		return nil, err
 	}
 
-	result := &SObjectUpsertResponse{}
-	err = json.Unmarshal(respBody, result)
+	log.Println(string(respBody))
 
+	result := &SObjectUpsertResponse{}
 	return result, nil
 }
